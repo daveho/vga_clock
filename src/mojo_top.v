@@ -18,13 +18,14 @@ module mojo_top(
     input avr_tx, // AVR Tx => FPGA Rx
     output avr_rx, // AVR Rx => FPGA Tx
     input avr_rx_busy, // AVR Rx buffer full
-	 output test_vga_out // for testing, 20 MHz flipflop signal output driven by 40 MHZ VGA clock
-    );
+	 //output test_vga_out // for testing, 20 MHz flipflop signal output driven by 40 MHZ VGA clock
+    output hsync
+	 );
 
 wire vgaclk;
 
-reg tstreg;
-reg test_vga_out;
+//reg tstreg;
+//reg test_vga_out;
 
 vga_clock vga_clock(
       .CLK_IN1(clk),
@@ -38,11 +39,43 @@ assign spi_miso = 1'bz;
 assign avr_rx = 1'bz;
 assign spi_channel = 4'bzzzz;
 
-assign led = 8'b0;
+assign led[6:0] = 7'b0;
+assign led[7] = rst;
 
+reg hsync;
+
+reg[10:0] hsync_count;
+
+// Generate hsync
 always @(posedge vgaclk) begin
-	test_vga_out <= tstreg;
-	tstreg <= ~tstreg;
+  if (hsync_count < 800) begin
+    // visible, generate pixel
+	 hsync <= 1'b1;
+	 hsync_count <= hsync_count + 1;
+  end else if (hsync_count >= 800 && hsync_count < 840) begin
+    // front porch
+	 hsync <= 1'b1;
+	 hsync_count <= hsync_count + 1;
+  end else if (hsync_count >= 840 && hsync_count < 968) begin
+    // hsync pulse
+	 hsync <= 1'b0;
+	 hsync_count <= hsync_count + 1;
+  end else if (hsync_count >= 968 && hsync_count < 1055) begin
+    // back porch
+	 hsync <= 1'b1;
+	 hsync_count <= hsync_count + 1;
+  end else begin
+    // end of back porch, next clock will begin new scan line
+	 hsync <= 1'b1;
+	 hsync_count <= 11'b0;
+  end
 end
+
+//always @(posedge vgaclk) begin
+//	test_vga_out <= tstreg;
+//	tstreg <= ~tstreg;
+//end
+
+
 
 endmodule

@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <report-views version="2.0" >
  <header>
-  <DateModified>2017-11-11T08:28:11</DateModified>
+  <DateModified>2017-11-11T16:29:42</DateModified>
   <ModuleName>mojo_top</ModuleName>
   <SummaryTimeStamp>2017-11-11T08:28:02</SummaryTimeStamp>
-  <SavedFilePath>C:/cygwin64/home/David Hovemeyer/git/vga-test/iseconfig/mojo_top.xreport</SavedFilePath>
-  <ImplementationReportsDirectory>C:/cygwin64/home/David Hovemeyer/git/vga-test/syn\</ImplementationReportsDirectory>
+  <SavedFilePath>C:/cygwin64/home/David Hovemeyer/git/vga_clock/iseconfig/mojo_top.xreport</SavedFilePath>
+  <ImplementationReportsDirectory>C:/cygwin64/home/David Hovemeyer/git/vga_clock/syn\</ImplementationReportsDirectory>
   <DateInitialized>2012-11-08T12:38:20</DateInitialized>
   <EnableMessageFiltering>false</EnableMessageFiltering>
  </header>
