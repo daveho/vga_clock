@@ -17,8 +17,19 @@ module mojo_top(
     // Serial connections
     input avr_tx, // AVR Tx => FPGA Rx
     output avr_rx, // AVR Rx => FPGA Tx
-    input avr_rx_busy // AVR Rx buffer full
+    input avr_rx_busy, // AVR Rx buffer full
+	 output test_vga_out // for testing, 20 MHz flipflop signal output driven by 40 MHZ VGA clock
     );
+
+wire vgaclk;
+
+reg tstreg;
+reg test_vga_out;
+
+vga_clock vga_clock(
+      .CLK_IN1(clk),
+      .CLK_VGA(vgaclk)
+);
 
 wire rst = ~rst_n; // make reset active high
 
@@ -28,5 +39,10 @@ assign avr_rx = 1'bz;
 assign spi_channel = 4'bzzzz;
 
 assign led = 8'b0;
+
+always @(posedge vgaclk) begin
+	test_vga_out <= tstreg;
+	tstreg <= ~tstreg;
+end
 
 endmodule

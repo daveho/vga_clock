@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <report-views version="2.0" >
  <header>
-  <DateModified>2014-02-20T09:25:01</DateModified>
+  <DateModified>2017-11-11T08:28:11</DateModified>
   <ModuleName>mojo_top</ModuleName>
-  <SummaryTimeStamp>2013-04-16T10:54:27</SummaryTimeStamp>
-  <SavedFilePath>/home/justin/workspace/Mojo-Tutorials/Mojo-Base/iseconfig/mojo_top.xreport</SavedFilePath>
-  <ImplementationReportsDirectory>/home/justin/workspace/Mojo-Tutorials/Mojo-Base/syn/</ImplementationReportsDirectory>
+  <SummaryTimeStamp>2017-11-11T08:28:02</SummaryTimeStamp>
+  <SavedFilePath>C:/cygwin64/home/David Hovemeyer/git/vga-test/iseconfig/mojo_top.xreport</SavedFilePath>
+  <ImplementationReportsDirectory>C:/cygwin64/home/David Hovemeyer/git/vga-test/syn\</ImplementationReportsDirectory>
   <DateInitialized>2012-11-08T12:38:20</DateInitialized>
   <EnableMessageFiltering>false</EnableMessageFiltering>
  </header>
