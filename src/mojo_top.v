@@ -19,7 +19,8 @@ module mojo_top(
     output avr_rx, // AVR Rx => FPGA Tx
     input avr_rx_busy, // AVR Rx buffer full
 	 //output test_vga_out // for testing, 20 MHz flipflop signal output driven by 40 MHZ VGA clock
-    output hsync
+    output hsync,
+	 output vsync
 	 );
 
 wire vgaclk;
@@ -43,11 +44,14 @@ assign led[6:0] = 7'b0;
 assign led[7] = rst;
 
 reg hsync;
+reg vsync;
 
 reg[10:0] hsync_count;
+reg[9:0] vsync_count;
 
 // Generate hsync
 always @(posedge vgaclk) begin
+  // Generate hsync, count scanlines for vsync generation
   if (hsync_count < 800) begin
     // visible, generate pixel
 	 hsync <= 1'b1;
@@ -64,10 +68,29 @@ always @(posedge vgaclk) begin
     // back porch
 	 hsync <= 1'b1;
 	 hsync_count <= hsync_count + 1;
-  end else begin
+  end else if (vsync_count < 627) begin
+    // not end of frame yet
     // end of back porch, next clock will begin new scan line
 	 hsync <= 1'b1;
 	 hsync_count <= 11'b0;
+	 vsync_count <= vsync_count + 1;
+  end else begin
+    // end of frame
+    // end of back porch, next clock will begin new scan line
+	 hsync <= 1'b1;
+	 hsync_count <= 11'b0;
+	 vsync_count <= 10'b0;
+  end
+  
+  // Generate vsync
+  // TODO: set flag register indicating when visible lines
+  // should be generated
+  if (vsync_count >= 601 && vsync_count < 605) begin
+    // generate vsync pulse
+    vsync <= 1'b0;
+  end else begin
+    // no vsync pulse
+    vsync <= 1'b1;
   end
 end
 
