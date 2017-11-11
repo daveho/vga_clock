@@ -32,3 +32,18 @@ NET "avr_rx_busy" LOC = P39 | IOSTANDARD = LVTTL;
 
 NET "hsync" LOC = P120 | IOSTANDARD = LVTTL;
 NET "vsync" LOC = P118 | IOSTANDARD = LVTTL;
+
+NET "blue_out<3>" LOC = P104 | IOSTANDARD = LVTTL;
+NET "blue_out<2>" LOC = P111 | IOSTANDARD = LVTTL;
+NET "blue_out<1>" LOC = P114 | IOSTANDARD = LVTTL;
+NET "blue_out<0>" LOC = P116 | IOSTANDARD = LVTTL;
+
+NET "green_out<3>" LOC = P94 | IOSTANDARD = LVTTL;
+NET "green_out<2>" LOC = P97 | IOSTANDARD = LVTTL;
+NET "green_out<1>" LOC = P99 | IOSTANDARD = LVTTL;
+NET "green_out<0>" LOC = P101 | IOSTANDARD = LVTTL;
+
+NET "red_out<3>" LOC = P82 | IOSTANDARD = LVTTL;
+NET "red_out<2>" LOC = P84 | IOSTANDARD = LVTTL;
+NET "red_out<1>" LOC = P87 | IOSTANDARD = LVTTL;
+NET "red_out<0>" LOC = P92 | IOSTANDARD = LVTTL;

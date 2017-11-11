@@ -18,15 +18,15 @@ module mojo_top(
     input avr_tx, // AVR Tx => FPGA Rx
     output avr_rx, // AVR Rx => FPGA Tx
     input avr_rx_busy, // AVR Rx buffer full
-	 //output test_vga_out // for testing, 20 MHz flipflop signal output driven by 40 MHZ VGA clock
+	 // VGA signals
     output hsync,
-	 output vsync
+	 output vsync,
+	 output[3:0] red_out,
+	 output[3:0] green_out,
+	 output[3:0] blue_out
 	 );
 
 wire vgaclk;
-
-//reg tstreg;
-//reg test_vga_out;
 
 vga_clock vga_clock(
       .CLK_IN1(clk),
@@ -49,42 +49,77 @@ reg vsync;
 reg[10:0] hsync_count;
 reg[9:0] vsync_count;
 
+reg[3:0] red_out;
+reg[3:0] green_out;
+reg[3:0] blue_out;
+
 // Generate hsync
 always @(posedge vgaclk) begin
   // Generate hsync, count scanlines for vsync generation
   if (hsync_count < 800) begin
-    // visible, generate pixel
+    // visible
 	 hsync <= 1'b1;
 	 hsync_count <= hsync_count + 1;
+	 
+	 if (vsync_count < 600) begin
+	   // visible line
+		// just generate a test pattern
+		red_out <= (vsync >> 2);
+		green_out <= (hsync >> 2);
+		blue_out <= (hsync >> 4);
+	 end else begin
+	   // not in a visible line
+		red_out <= 4'b0;
+		green_out <= 4'b0;
+		blue_out <= 4'b0;
+	 end
   end else if (hsync_count >= 800 && hsync_count < 840) begin
     // front porch
 	 hsync <= 1'b1;
 	 hsync_count <= hsync_count + 1;
+	 // not in a visible line
+	 red_out <= 4'b0;
+	 green_out <= 4'b0;
+	 blue_out <= 4'b0;
   end else if (hsync_count >= 840 && hsync_count < 968) begin
     // hsync pulse
 	 hsync <= 1'b0;
 	 hsync_count <= hsync_count + 1;
+	 // not in a visible line
+	 red_out <= 4'b0;
+	 green_out <= 4'b0;
+	 blue_out <= 4'b0;
   end else if (hsync_count >= 968 && hsync_count < 1055) begin
     // back porch
 	 hsync <= 1'b1;
 	 hsync_count <= hsync_count + 1;
+	 // not in a visible line
+	 red_out <= 4'b0;
+	 green_out <= 4'b0;
+	 blue_out <= 4'b0;
   end else if (vsync_count < 627) begin
     // not end of frame yet
     // end of back porch, next clock will begin new scan line
 	 hsync <= 1'b1;
 	 hsync_count <= 11'b0;
 	 vsync_count <= vsync_count + 1;
+	 // not in a visible line
+	 red_out <= 4'b0;
+	 green_out <= 4'b0;
+	 blue_out <= 4'b0;
   end else begin
     // end of frame
     // end of back porch, next clock will begin new scan line
 	 hsync <= 1'b1;
 	 hsync_count <= 11'b0;
 	 vsync_count <= 10'b0;
+	 // not in a visible line
+	 red_out <= 4'b0;
+	 green_out <= 4'b0;
+	 blue_out <= 4'b0;
   end
   
   // Generate vsync
-  // TODO: set flag register indicating when visible lines
-  // should be generated
   if (vsync_count >= 601 && vsync_count < 605) begin
     // generate vsync pulse
     vsync <= 1'b0;
@@ -93,12 +128,5 @@ always @(posedge vgaclk) begin
     vsync <= 1'b1;
   end
 end
-
-//always @(posedge vgaclk) begin
-//	test_vga_out <= tstreg;
-//	tstreg <= ~tstreg;
-//end
-
-
 
 endmodule
