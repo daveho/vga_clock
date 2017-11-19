@@ -64,9 +64,9 @@ always @(posedge vgaclk) begin
 	 if (vsync_count < 600) begin
 	   // visible line
 		// just generate a test pattern
-		red_out <= (vsync >> 2);
-		green_out <= (hsync >> 2);
-		blue_out <= (hsync >> 4);
+		red_out <= (vsync_count >> 2) & 4'hF;
+		green_out <= (hsync_count >> 2) & 4'hF;
+		blue_out <= (hsync_count >> 4) & 4'hF;
 	 end else begin
 	   // not in a visible line
 		red_out <= 4'b0;
