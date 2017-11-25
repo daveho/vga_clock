@@ -19,11 +19,11 @@ module mojo_top(
     output avr_rx, // AVR Rx => FPGA Tx
     input avr_rx_busy, // AVR Rx buffer full
 	 // VGA signals
-    output hsync,
-	 output vsync,
-	 output[3:0] red_out,
-	 output[3:0] green_out,
-	 output[3:0] blue_out
+    output reg hsync,
+	 output reg vsync,
+	 output reg[3:0] red_out,
+	 output reg[3:0] green_out,
+	 output reg[3:0] blue_out
 	 );
 
 wire vgaclk;
@@ -43,15 +43,19 @@ assign spi_channel = 4'bzzzz;
 assign led[6:0] = 7'b0;
 assign led[7] = rst;
 
+/*
 reg hsync;
 reg vsync;
+*/
 
 reg[10:0] hsync_count;
 reg[9:0] vsync_count;
 
+/*
 reg[3:0] red_out;
 reg[3:0] green_out;
 reg[3:0] blue_out;
+*/
 
 // Generate hsync
 always @(posedge vgaclk) begin
