@@ -84,10 +84,8 @@ assign spi_miso = 1'bz;
 assign avr_rx = 1'bz;
 assign spi_channel = 4'bzzzz;
 
-/*
 assign led[6:0] = 7'b0;
 assign led[7] = rst;
-*/
 
 /*
 reg hsync;
@@ -117,11 +115,11 @@ parameter VGA_VERT_BACK_PORCH_END = 627;
 always @(posedge vgaclk or posedge sys_rst) begin
   if (sys_rst) begin
 	  // Reset, no signal
-	  hsync = 1'b1;
-	  vsync = 1'b1;
-	  red_out = 4'b0;
-	  green_out = 4'b0;
-	  blue_out = 4'b0;
+	  hsync <= 1'b1;
+	  vsync <= 1'b1;
+	  red_out <= 4'b0;
+	  green_out <= 4'b0;
+	  blue_out <= 4'b0;
   end else begin
 	  // Generate hsync and color signals, count scanlines for vsync generation
 	  if (hsync_count < VGA_HORIZ_RES) begin
