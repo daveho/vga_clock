@@ -57,15 +57,25 @@ reg[3:0] green_out;
 reg[3:0] blue_out;
 */
 
+// VGA 800x600@60Hz signal timings
+parameter VGA_HORIZ_RES = 800;
+parameter VGA_VERT_RES = 600;
+parameter VGA_HORIZ_FRONT_PORCH_END = 840;
+parameter VGA_HORIZ_SYNC_END = 968;
+parameter VGA_HORIZ_BACK_PORCH_END = 1055;
+parameter VGA_VERT_FRONT_PORCH_END = 601;
+parameter VGA_VERT_SYNC_END = 606;
+parameter VGA_VERT_BACK_PORCH_END = 627;
+
 // Generate hsync
 always @(posedge vgaclk) begin
-  // Generate hsync, count scanlines for vsync generation
-  if (hsync_count < 800) begin
+  // Generate hsync and color signals, count scanlines for vsync generation
+  if (hsync_count < VGA_HORIZ_RES) begin
     // visible
 	 hsync <= 1'b1;
 	 hsync_count <= hsync_count + 1;
 	 
-	 if (vsync_count < 600) begin
+	 if (vsync_count < VGA_VERT_RES) begin
 	   // visible line
 		// just generate a test pattern
 		red_out <= (vsync_count >> 2) & 4'hF;
@@ -77,7 +87,7 @@ always @(posedge vgaclk) begin
 		green_out <= 4'b0;
 		blue_out <= 4'b0;
 	 end
-  end else if (hsync_count >= 800 && hsync_count < 840) begin
+  end else if (hsync_count >= VGA_HORIZ_RES && hsync_count < VGA_HORIZ_FRONT_PORCH_END) begin
     // front porch
 	 hsync <= 1'b1;
 	 hsync_count <= hsync_count + 1;
@@ -85,7 +95,7 @@ always @(posedge vgaclk) begin
 	 red_out <= 4'b0;
 	 green_out <= 4'b0;
 	 blue_out <= 4'b0;
-  end else if (hsync_count >= 840 && hsync_count < 968) begin
+  end else if (hsync_count >= VGA_HORIZ_FRONT_PORCH_END && hsync_count < VGA_HORIZ_SYNC_END) begin
     // hsync pulse
 	 hsync <= 1'b0;
 	 hsync_count <= hsync_count + 1;
@@ -93,7 +103,7 @@ always @(posedge vgaclk) begin
 	 red_out <= 4'b0;
 	 green_out <= 4'b0;
 	 blue_out <= 4'b0;
-  end else if (hsync_count >= 968 && hsync_count < 1055) begin
+  end else if (hsync_count >= VGA_HORIZ_SYNC_END && hsync_count < VGA_HORIZ_BACK_PORCH_END) begin
     // back porch
 	 hsync <= 1'b1;
 	 hsync_count <= hsync_count + 1;
@@ -101,7 +111,7 @@ always @(posedge vgaclk) begin
 	 red_out <= 4'b0;
 	 green_out <= 4'b0;
 	 blue_out <= 4'b0;
-  end else if (vsync_count < 627) begin
+  end else if (vsync_count < VGA_VERT_BACK_PORCH_END) begin
     // not end of frame yet
     // end of back porch, next clock will begin new scan line
 	 hsync <= 1'b1;
@@ -124,7 +134,7 @@ always @(posedge vgaclk) begin
   end
   
   // Generate vsync
-  if (vsync_count >= 601 && vsync_count < 605) begin
+  if (vsync_count > VGA_VERT_FRONT_PORCH_END && vsync_count < VGA_VERT_SYNC_END) begin
     // generate vsync pulse
     vsync <= 1'b0;
   end else begin
