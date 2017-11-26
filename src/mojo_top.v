@@ -18,10 +18,8 @@ module mojo_top(
     input avr_tx, // AVR Tx => FPGA Rx
     output avr_rx, // AVR Rx => FPGA Tx
     input avr_rx_busy, // AVR Rx buffer full
-	 /*
 	 // System reset signal (from microcontroller)
 	 input sys_rst,
-	 */
 	 // VGA signals
     output reg hsync,
 	 output reg vsync,
@@ -116,78 +114,88 @@ parameter VGA_VERT_SYNC_END = 606;
 parameter VGA_VERT_BACK_PORCH_END = 627;
 
 // Generate hsync
-always @(posedge vgaclk) begin
-  // Generate hsync and color signals, count scanlines for vsync generation
-  if (hsync_count < VGA_HORIZ_RES) begin
-    // visible
-	 hsync <= 1'b1;
-	 hsync_count <= hsync_count + 1;
-	 
-	 if (vsync_count < VGA_VERT_RES) begin
-	   // visible line
-		// just generate a test pattern
-		red_out <= (vsync_count >> 2) & 4'hF;
-		green_out <= (hsync_count >> 2) & 4'hF;
-		blue_out <= (hsync_count >> 4) & 4'hF;
-	 end else begin
-	   // not in a visible line
-		red_out <= 4'b0;
-		green_out <= 4'b0;
-		blue_out <= 4'b0;
-	 end
-  end else if (hsync_count >= VGA_HORIZ_RES && hsync_count < VGA_HORIZ_FRONT_PORCH_END) begin
-    // front porch
-	 hsync <= 1'b1;
-	 hsync_count <= hsync_count + 1;
-	 // not in a visible line
-	 red_out <= 4'b0;
-	 green_out <= 4'b0;
-	 blue_out <= 4'b0;
-  end else if (hsync_count >= VGA_HORIZ_FRONT_PORCH_END && hsync_count < VGA_HORIZ_SYNC_END) begin
-    // hsync pulse
-	 hsync <= 1'b0;
-	 hsync_count <= hsync_count + 1;
-	 // not in a visible line
-	 red_out <= 4'b0;
-	 green_out <= 4'b0;
-	 blue_out <= 4'b0;
-  end else if (hsync_count >= VGA_HORIZ_SYNC_END && hsync_count < VGA_HORIZ_BACK_PORCH_END) begin
-    // back porch
-	 hsync <= 1'b1;
-	 hsync_count <= hsync_count + 1;
-	 // not in a visible line
-	 red_out <= 4'b0;
-	 green_out <= 4'b0;
-	 blue_out <= 4'b0;
-  end else if (vsync_count < VGA_VERT_BACK_PORCH_END) begin
-    // not end of frame yet
-    // end of back porch, next clock will begin new scan line
-	 hsync <= 1'b1;
-	 hsync_count <= 11'b0;
-	 vsync_count <= vsync_count + 1;
-	 // not in a visible line
-	 red_out <= 4'b0;
-	 green_out <= 4'b0;
-	 blue_out <= 4'b0;
+always @(posedge vgaclk or posedge sys_rst) begin
+  if (sys_rst) begin
+	  // Reset, no signal
+	  hsync = 1'b1;
+	  vsync = 1'b1;
+	  red_out = 4'b0;
+	  green_out = 4'b0;
+	  blue_out = 4'b0;
   end else begin
-    // end of frame
-    // end of back porch, next clock will begin new scan line
-	 hsync <= 1'b1;
-	 hsync_count <= 11'b0;
-	 vsync_count <= 10'b0;
-	 // not in a visible line
-	 red_out <= 4'b0;
-	 green_out <= 4'b0;
-	 blue_out <= 4'b0;
-  end
+	  // Generate hsync and color signals, count scanlines for vsync generation
+	  if (hsync_count < VGA_HORIZ_RES) begin
+		 // visible
+		 hsync <= 1'b1;
+		 hsync_count <= hsync_count + 1;
+		 
+		 if (vsync_count < VGA_VERT_RES) begin
+			// visible line
+			// just generate a test pattern
+			red_out <= (vsync_count >> 2) & 4'hF;
+			green_out <= (hsync_count >> 2) & 4'hF;
+			blue_out <= (hsync_count >> 4) & 4'hF;
+		 end else begin
+			// not in a visible line
+			red_out <= 4'b0;
+			green_out <= 4'b0;
+			blue_out <= 4'b0;
+		 end
+	  end else if (hsync_count >= VGA_HORIZ_RES && hsync_count < VGA_HORIZ_FRONT_PORCH_END) begin
+		 // front porch
+		 hsync <= 1'b1;
+		 hsync_count <= hsync_count + 1;
+		 // not in a visible line
+		 red_out <= 4'b0;
+		 green_out <= 4'b0;
+		 blue_out <= 4'b0;
+	  end else if (hsync_count >= VGA_HORIZ_FRONT_PORCH_END && hsync_count < VGA_HORIZ_SYNC_END) begin
+		 // hsync pulse
+		 hsync <= 1'b0;
+		 hsync_count <= hsync_count + 1;
+		 // not in a visible line
+		 red_out <= 4'b0;
+		 green_out <= 4'b0;
+		 blue_out <= 4'b0;
+	  end else if (hsync_count >= VGA_HORIZ_SYNC_END && hsync_count < VGA_HORIZ_BACK_PORCH_END) begin
+		 // back porch
+		 hsync <= 1'b1;
+		 hsync_count <= hsync_count + 1;
+		 // not in a visible line
+		 red_out <= 4'b0;
+		 green_out <= 4'b0;
+		 blue_out <= 4'b0;
+	  end else if (vsync_count < VGA_VERT_BACK_PORCH_END) begin
+		 // not end of frame yet
+		 // end of back porch, next clock will begin new scan line
+		 hsync <= 1'b1;
+		 hsync_count <= 11'b0;
+		 vsync_count <= vsync_count + 1;
+		 // not in a visible line
+		 red_out <= 4'b0;
+		 green_out <= 4'b0;
+		 blue_out <= 4'b0;
+	  end else begin
+		 // end of frame
+		 // end of back porch, next clock will begin new scan line
+		 hsync <= 1'b1;
+		 hsync_count <= 11'b0;
+		 vsync_count <= 10'b0;
+		 // not in a visible line
+		 red_out <= 4'b0;
+		 green_out <= 4'b0;
+		 blue_out <= 4'b0;
+	  end
+	  
+	  // Generate vsync
+	  if (vsync_count > VGA_VERT_FRONT_PORCH_END && vsync_count < VGA_VERT_SYNC_END) begin
+		 // generate vsync pulse
+		 vsync <= 1'b0;
+	  end else begin
+		 // no vsync pulse
+		 vsync <= 1'b1;
+	  end
   
-  // Generate vsync
-  if (vsync_count > VGA_VERT_FRONT_PORCH_END && vsync_count < VGA_VERT_SYNC_END) begin
-    // generate vsync pulse
-    vsync <= 1'b0;
-  end else begin
-    // no vsync pulse
-    vsync <= 1'b1;
   end
 end
 
